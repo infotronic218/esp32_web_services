@@ -20,6 +20,12 @@ static struct LedInfo led;
 
 static void blink(void *params) ;
 
+/**
+ * @brief Function to intialize the led interface 
+ * 
+ * @param pin_ the gpio pin
+ * @param delay_ the delay us 
+ */
 void led_initialize_blink(uint8_t pin_, int delay_){
     led.delay_us = delay_ ;
     led.pin = pin_;
