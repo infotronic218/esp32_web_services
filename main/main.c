@@ -14,7 +14,7 @@ void app_main(void)
     xTaskCreate(led_task, "LED Blinking", 1024, NULL, 5, NULL);
 
     while(1){
-        vTaskDelay(5000);
+        vTaskDelay(pdMS_TO_TICKS(10000));
     }
 
 }
@@ -29,7 +29,7 @@ void led_task(void *params ){
 
     while(1)
     {
-        vTaskDelay(500);
+        vTaskDelay(pdMS_TO_TICKS(1000));
         gpio_set_level(LED, state);
         state =! state ;
 
