@@ -27,7 +27,6 @@ void wifi_connect_initialize(){
     esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID,    wifi_event_handler, NULL);
     esp_event_handler_register(IP_EVENT, ESP_EVENT_ANY_ID , ip_event_handler, NULL);
     ESP_ERROR_CHECK( esp_wifi_set_storage(WIFI_STORAGE_RAM));
-
 }
 
 /**
@@ -55,9 +54,7 @@ esp_err_t wifi_connect_sta_start(char *ssid, char *pass, int timeout_ms)
     if(result==CONNECT_STA_GOT_IP){
         return ESP_OK;
     }
-
     return ESP_FAIL;
-
 }
 
 void wifi_connect_ap_start(char *ssid, char *pass){
@@ -133,9 +130,7 @@ static void ip_event_handler (void* event_handler_arg, esp_event_base_t event_ba
         ESP_LOGI(TAG, "STA Got IP");
         xEventGroupSetBits(connect_events, CONNECT_STA_GOT_IP);
     }
-    
         break;
-
     default:
         break;
     }
