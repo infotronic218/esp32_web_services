@@ -3,8 +3,6 @@
 #include <string.h>
 #include "esp_log.h"
 #include "freertos/event_groups.h"
-
-
 static char * TAG = "wifi_connect" ;
 
 
@@ -14,12 +12,12 @@ enum Connect_Events {
    CONNECT_STA_DISCONNECTED = BIT1
 };
 
+char *get_wifi_disconnection_string(wifi_err_reason_t wifi_err_reason);
 static void wifi_event_handler (void* event_handler_arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
 static void ip_event_handler (void* event_handler_arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
 
 /**
- * @brief Initialize the wifi base function 
- * 
+ * @brief Initialize the wifi base function  
  */
 void wifi_connect_initialize(){
     ESP_ERROR_CHECK(esp_netif_init()) ; // Initialize the network interface
@@ -34,9 +32,9 @@ void wifi_connect_initialize(){
 
 /**
  * @brief Start the WIFI in station mode 
- * 
  * @param ssid The wifi name
  * @param pass The password 
+ * @param timeout_ms Timeout 
  */
 esp_err_t wifi_connect_sta_start(char *ssid, char *pass, int timeout_ms)
 {
@@ -45,32 +43,40 @@ esp_err_t wifi_connect_sta_start(char *ssid, char *pass, int timeout_ms)
     esp_netif_t * network_interface = esp_netif_create_default_wifi_sta();
 
     wifi_config_t wifi_conf;
-
+    memset(&wifi_conf, 0, sizeof(wifi_conf));
     strncpy((char*)wifi_conf.sta.ssid, ssid, sizeof(wifi_conf.sta.ssid)-1);
     strncpy((char*)wifi_conf.sta.password, pass, sizeof(wifi_conf.sta.password)-1);
 
     ret = esp_wifi_set_mode(WIFI_MODE_STA);
     ret = esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_conf);
     esp_wifi_start();
-   EventBits_t result = xEventGroupWaitBits(connect_events, CONNECT_STA_GOT_IP| CONNECT_STA_DISCONNECTED, pdTRUE,pdFALSE, pdMS_TO_TICKS(timeout_ms)) ;
-   if(result==CONNECT_STA_GOT_IP){
-    return ESP_OK;
-   }
+    EventBits_t result = xEventGroupWaitBits(connect_events, CONNECT_STA_GOT_IP| CONNECT_STA_DISCONNECTED, pdTRUE,pdFALSE, pdMS_TO_TICKS(timeout_ms)) ;
+    
+    if(result==CONNECT_STA_GOT_IP){
+        return ESP_OK;
+    }
 
     return ESP_FAIL;
 
-
-
-
 }
+
 void wifi_connect_ap_start(char *ssid, char *pass){
 
 }
+/**
+ * @brief Stop the wifi in station mmode 
+ */
 void wifi_connect_sta_stop(){
-
+      ESP_ERROR_CHECK(esp_wifi_disconnect());
+      ESP_ERROR_CHECK(esp_wifi_stop());
 }
-void wifi_connect_ap_stop(){
 
+/**
+ * @brief Stop the Access point of the wifi and 
+ */
+void wifi_connect_ap_stop(){
+      ESP_ERROR_CHECK(esp_wifi_disconnect());
+      ESP_ERROR_CHECK(esp_wifi_stop());
 }
 
 
@@ -94,17 +100,21 @@ static void wifi_event_handler (void* event_handler_arg, esp_event_base_t event_
     case WIFI_EVENT_STA_CONNECTED:
     {
         ESP_LOGI(TAG, "Station connected");
-        wifi_event_sta_disconnected_t *sta_event = (event_data);
-        if(sta_event->reason == WIFI_REASON_ASSOC_LEAVE){
-            ESP_LOGI(TAG, "Disconnected on purpose");
-        }else{
-
-        }
+        
+        
     }break;
     
     case WIFI_EVENT_STA_DISCONNECTED:
     {
         ESP_LOGI(TAG, "STA Disconnected");
+        xEventGroupSetBits(connect_events, CONNECT_STA_DISCONNECTED);
+        wifi_event_sta_disconnected_t *sta_event = (event_data);
+        if(sta_event->reason == WIFI_REASON_ASSOC_LEAVE){
+            ESP_LOGI(TAG, "Disconnected on purpose");
+        }else{
+          char *reason  = get_wifi_disconnection_string(sta_event->reason);
+          ESP_LOGE(TAG, "Reason : %s ", reason);
+        }
     }break;
 
     default:
@@ -121,6 +131,7 @@ static void ip_event_handler (void* event_handler_arg, esp_event_base_t event_ba
     case IP_EVENT_STA_GOT_IP:
     {
         ESP_LOGI(TAG, "STA Got IP");
+        xEventGroupSetBits(connect_events, CONNECT_STA_GOT_IP);
     }
     
         break;

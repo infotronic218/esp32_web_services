@@ -2,7 +2,7 @@
 #include <string.h>
 #include <esp_wifi.h>
 
-char *get_wifi_disconnection_string(wifi_err_reason_t wifi_err_reason)
+ char *get_wifi_disconnection_string(wifi_err_reason_t wifi_err_reason)
 {
     switch (wifi_err_reason)
     {
@@ -121,4 +121,6 @@ char *get_wifi_disconnection_string(wifi_err_reason_t wifi_err_reason)
     case WIFI_REASON_SA_QUERY_TIMEOUT:
         return "WIFI_REASON_SA_QUERY_TIMEOUT";
     }
+
+    return "" ;
 }
