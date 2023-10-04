@@ -57,9 +57,24 @@ esp_err_t wifi_connect_sta_start(char *ssid, char *pass, int timeout_ms)
     return ESP_FAIL;
 }
 
-void wifi_connect_ap_start(char *ssid, char *pass){
+esp_err_t wifi_connect_ap_start(char *ssid, char *pass){
+     esp_netif_t * network_interface = esp_netif_create_default_wifi_ap();
+     wifi_config_t wifi_conf ;
+     memset(&wifi_conf, 0, sizeof(wifi_conf));
+
+     strncpy((char*)wifi_conf.ap.ssid, ssid, sizeof(wifi_conf.ap.ssid)-1);
+     strncpy((char*)wifi_conf.ap.password, pass, sizeof(wifi_conf.ap.password)-1 );
+     wifi_conf.ap.authmode = WIFI_AUTH_WPA_WPA2_PSK;
+     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
+     wifi_conf.ap.max_connection = 5;
+     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_conf));
+     ESP_ERROR_CHECK(esp_wifi_start());
+
+     return ESP_OK ;
 
 }
+
+
 /**
  * @brief Stop the wifi in station mmode 
  */

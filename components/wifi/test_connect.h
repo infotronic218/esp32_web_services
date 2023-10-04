@@ -15,8 +15,8 @@ void test_connect_main()
 
    wifi_connect_initialize() ;
    vTaskDelay(pdMS_TO_TICKS(1000));
-   wifi_connect_sta_start(ssid, password, 10000);
-
+   //wifi_connect_sta_start(ssid, password, 10000);
+   wifi_connect_ap_start("Sous", "12345678");
     while(1)
     {
       vTaskDelay(1000);
