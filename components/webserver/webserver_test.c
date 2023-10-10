@@ -5,9 +5,9 @@
 #include "freertos/task.h"
 #include "esp_log.h"
 
-static const char *ssid = "Bbox-727DF9A6" ;
-static const char *password= "c7HwHdEL33bhCJ4fVm";
-static const char *TAG = "webserver";
+static  char *ssid = "Bbox-727DF9A6" ;
+static  char *password= "c7HwHdEL33bhCJ4fVm";
+static  char *TAG = "webserver";
 static esp_err_t test_page_handler(httpd_req_t *r);
 
 void webserver_test_loop(){
