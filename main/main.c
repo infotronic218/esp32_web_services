@@ -20,8 +20,8 @@ void app_main(void)
 
   nvs_flash_init();
   //test_connect_main();
-  //webserver_test_loop();
-  tests_spiffs_helper_loop();
+  webserver_test_loop();
+  //tests_spiffs_helper_loop();
 
     while(1){
         vTaskDelay(pdMS_TO_TICKS(10000));
