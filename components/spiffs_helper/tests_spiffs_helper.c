@@ -2,6 +2,7 @@
 #include "spiffs_helper.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "stdio.h"
 static char * BASE_PATH = "/spiffs";
 
 void tests_spiffs_helper_loop(){
@@ -11,9 +12,9 @@ void tests_spiffs_helper_loop(){
        printf("Error initializing the file");
     }
      
-     FILE * file ;
+     FILE * file = NULL;
      spiffs_helper_get_file(BASE_PATH, "/index.html","r", file);
-
+     
     while(1)
     {
       vTaskDelay(pdMS_TO_TICKS(1000));

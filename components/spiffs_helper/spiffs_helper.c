@@ -44,6 +44,10 @@ esp_err_t spiffs_helper_init(char *base_path)
 
 }
 
+esp_err_t spiffs_helper_deinit(){
+    return esp_vfs_spiffs_unregister(NULL);
+}
+
 
 /**
  * @brief Read file from SPIFFS directory
@@ -58,12 +62,14 @@ esp_err_t spiffs_helper_get_file(char *base_path,char *path, char *mode, FILE *f
     char full_path[100];
     memset(full_path, 0, sizeof(full_path));
     sprintf(full_path, "%s%s", base_path, path);
+    ESP_LOGI(TAG,"Full path : %s", full_path);
     found_file = fopen(full_path, mode);
     if(found_file!=NULL){
+        
+        ESP_LOGI(TAG, "%s File read SUCCESS", full_path);
         return ESP_OK ;
-        ESP_LOGE(TAG, "%s File read ERROR", full_path);
     }
     found_file = NULL ;
-    ESP_LOGI(TAG, "%s File read successfully", full_path);
+    ESP_LOGE(TAG, "%s File read ERROR", full_path);
     return ESP_FAIL ;
 }
