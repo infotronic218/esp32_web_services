@@ -10,7 +10,7 @@ static char * TAG = "spiffs_helper";
  * @param base_path The base path of SPIFFS
  * @return esp_err_t return ESP_OK when the initialization went correctly and ESP_FAIL when not
  */
-esp_err_t spiffs_helper_init(char *base_path)
+esp_err_t file_manager_spiffs_init(char *base_path)
 {
     esp_vfs_spiffs_conf_t config = {
         .base_path = base_path,
@@ -44,7 +44,7 @@ esp_err_t spiffs_helper_init(char *base_path)
 
 }
 
-esp_err_t spiffs_helper_deinit(){
+esp_err_t file_manager_spiffs_deinit(){
     return esp_vfs_spiffs_unregister(NULL);
 }
 
@@ -59,7 +59,7 @@ esp_err_t spiffs_helper_deinit(){
  * @return file   FILE* when the file is found and NULL when not 
  */
 
-FILE * spiffs_helper_get_file(char *base_path,char *path, char *mode){
+FILE * file_manager_spiffs_get_file(char *base_path,char *path, char *mode){
     char full_path[100];
     memset(full_path, 0, sizeof(full_path));
     sprintf(full_path, "%s%s", base_path, path);

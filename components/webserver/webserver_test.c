@@ -22,7 +22,7 @@ void webserver_test_loop(){
    esp_err_t ret = wifi_connect_sta_start(ssid, password, 10000);
    //wifi_connect_ap_start("Sous", "12345678");
   
-  spiffs_helper_init(BASE_PATH);
+  file_manager_spiffs_init(BASE_PATH);
 
    if(ret== ESP_OK){
     ESP_LOGI(TAG, "Starting the webserver");
@@ -60,7 +60,7 @@ void webserver_test_loop(){
 static esp_err_t test_page_handler(httpd_req_t *req){
   //httpd_resp_sendstr(r, "<h1>Hello my friend ! How are you .</h1>");
   
-  FILE *file = spiffs_helper_get_file(BASE_PATH, "/index.html", "r");
+  FILE *file = file_manager_spiffs_get_file(BASE_PATH, "/index.html", "r");
   if(file==NULL)
   {
     ESP_LOGE(TAG, "Error reading the file");
@@ -95,7 +95,7 @@ static esp_err_t on_default_handler(httpd_req_t *req)
   sprintf(full_path, "%s%s", BASE_PATH, req->uri);
   ESP_LOGI(TAG, "Path: %s", full_path);
   // LOAD THE FILE 
-  FILE * file = spiffs_helper_get_file(BASE_PATH, req->uri, "r");
+  FILE * file = file_manager_spiffs_get_file(BASE_PATH, req->uri, "r");
   // GET FILE EXTENSION
   char *ext = strrchr(req->uri, '.');
   if(ext){
@@ -106,7 +106,7 @@ static esp_err_t on_default_handler(httpd_req_t *req)
    }
 
   if(file==NULL){
-    file = spiffs_helper_get_file(BASE_PATH, "/index.html","r");
+    file = file_manager_spiffs_get_file(BASE_PATH, "/index.html","r");
   }
 
   if(file==NULL){
