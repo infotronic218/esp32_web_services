@@ -27,6 +27,7 @@ void webserver_test_loop(){
    if(ret== ESP_OK){
     ESP_LOGI(TAG, "Starting the webserver");
    httpd_handle_t *server = webserver_start(true);
+
    struct page_info_t infos ={
       .method = HTTP_GET,
       .url = "/testing",
@@ -98,11 +99,13 @@ static esp_err_t on_default_handler(httpd_req_t *req)
   FILE * file = file_manager_spiffs_get_file(BASE_PATH, req->uri, "r");
   // GET FILE EXTENSION
   char *ext = strrchr(req->uri, '.');
+  
   if(ext){
-    if(strcmp(ext, ".css")==0) httpd_resp_set_status(req,"text/css");
-    if(strcmp(ext, ".js")==0) httpd_resp_set_status(req,"text/javascript");
-    if(strcmp(ext, ".png")==0) httpd_resp_set_status(req,"image/png");
-    if(strcmp(ext, ".jpg")==0) httpd_resp_set_status(req,"image/jpg");
+    ESP_LOGI(TAG, "Extension: %s", ext);
+    if(strcmp(ext, ".css")==0) httpd_resp_set_type(req,"text/css");
+    if(strcmp(ext, ".js")==0) httpd_resp_set_type(req,"text/javascript");
+    if(strcmp(ext, ".png")==0) httpd_resp_set_type(req,"image/png");
+    if(strcmp(ext, ".jpg")==0) httpd_resp_set_type(req,"image/jpg");
    }
 
   if(file==NULL){

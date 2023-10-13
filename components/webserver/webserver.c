@@ -5,7 +5,7 @@ static httpd_handle_t server3 ;
 
 static char * TAG = "webserver" ;
 static char * BASE_PATH =  "/spiffs";
-static esp_err_t on_default_url(httpd_req_t *r);
+
 
 httpd_handle_t  webserver_start(bool wildcard)
 {
@@ -45,10 +45,4 @@ void webserver_stop()
 }
 
 
- esp_err_t on_default_url(httpd_req_t *r){
-    ESP_LOGI(TAG, "New Request on the server");
-    
-    httpd_resp_sendstr(r, "<h1>Hello world </h1>");
-
-    return ESP_OK;
- }
+ 
