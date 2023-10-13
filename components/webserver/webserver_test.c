@@ -4,7 +4,7 @@
 #include "freertos/FreeRTOSConfig.h"
 #include "freertos/task.h"
 #include "esp_log.h"
-#include "spiffs_helper.h"
+#include "file_manager_spiffs.h"
 #include "stdio.h"
 
 static  char *ssid = "Bbox-727DF9A6" ;
@@ -104,7 +104,7 @@ static esp_err_t on_default_handler(httpd_req_t *req)
     if(strcmp(ext, ".png")==0) httpd_resp_set_status(req,"image/png");
     if(strcmp(ext, ".jpg")==0) httpd_resp_set_status(req,"image/jpg");
    }
-   
+
   if(file==NULL){
     file = spiffs_helper_get_file(BASE_PATH, "/index.html","r");
   }

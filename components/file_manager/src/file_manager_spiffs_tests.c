@@ -1,5 +1,5 @@
-#include "tests_spiffs_helper.h"
-#include "spiffs_helper.h"
+#include "file_manager_spiffs.h"
+#include "file_manager_spiffs_tests.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "stdio.h"
