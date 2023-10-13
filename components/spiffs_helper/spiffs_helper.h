@@ -7,6 +7,6 @@
 #include "esp_log.h"
 esp_err_t spiffs_helper_init(char * base_path);
 esp_err_t spiffs_helper_deinit();
-esp_err_t spiffs_helper_get_file(char *base_path,char *path, char *mode,  FILE **found_file);
-
+/*esp_err_t spiffs_helper_get_file(char *base_path,char *path, char *mode,  FILE *found_file);*/
+FILE * spiffs_helper_get_file(char *base_path,char *path, char *mode);
 #endif

@@ -2,7 +2,7 @@
 #define __WEBSERVER__
 #include "esp_log.h"
 #include "esp_http_server.h"
-httpd_handle_t  webserver_start();
+httpd_handle_t  webserver_start(bool wild_card);
 
 struct  page_info_t {
   const char * url;

@@ -12,8 +12,7 @@ void tests_spiffs_helper_loop(){
        printf("Error initializing the file");
     }
      
-     FILE * file = NULL;
-     spiffs_helper_get_file(BASE_PATH, "/index.html","r", file);
+     FILE * file = spiffs_helper_get_file(BASE_PATH, "/index.html","r");
      
     while(1)
     {
