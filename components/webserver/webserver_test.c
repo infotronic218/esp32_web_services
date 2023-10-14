@@ -6,13 +6,14 @@
 #include "esp_log.h"
 #include "file_manager_spiffs.h"
 #include "stdio.h"
+#include "cJSON.h"
 
 static  char *ssid = "Bbox-727DF9A6" ;
 static  char *password= "c7HwHdEL33bhCJ4fVm";
 static  char *TAG = "webserver";
 static esp_err_t test_page_handler(httpd_req_t *req);
 static esp_err_t on_default_handler(httpd_req_t *req);
-
+static esp_err_t on_led_json_handler(httpd_req_t *req);
 
 static char * BASE_PATH =  "/spiffs";
 
@@ -33,8 +34,18 @@ void webserver_test_loop(){
       .url = "/testing",
       .page_handler =  test_page_handler 
    };
+    webserver_register_page(server,&infos);
+
+   // JSON REQUEST 
+   struct page_info_t led_control_info = {
+     .method = HTTP_GET,
+     .url = "/leds_json",
+     .page_handler = on_led_json_handler 
+   };
+
+    webserver_register_page(server,&led_control_info);
    
-   webserver_register_page(server,&infos);
+  
 
    // ON DEFAULT URL 
    struct page_info_t on_default_infos = {
@@ -130,4 +141,22 @@ static esp_err_t on_default_handler(httpd_req_t *req)
 
  
   return ESP_OK ;
+}
+
+
+
+
+
+static esp_err_t on_led_json_handler(httpd_req_t *req){
+
+ cJSON * data = cJSON_CreateObject();
+ cJSON_AddBoolToObject(data, "state", false);
+ cJSON_AddStringToObject(data, "name", "led1");
+ 
+ char *json_text = cJSON_Print(data);
+ ESP_LOGI(TAG, "JSON: %s", json_text);
+ cJSON_Delete(data);
+ httpd_resp_set_type(req, "text/json");
+ httpd_resp_sendstr(req, json_text);
+ return ESP_OK ;
 }

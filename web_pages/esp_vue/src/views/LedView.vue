@@ -12,10 +12,15 @@
             <label>Result: {{ result }}</label>
          </div>
     </div>
+    <div class="row">
+        <button v-on:click="set_led_state(true)" class="col-sm-2 m-1 btn btn-success">ON</button>
+        <button v-on:click="set_led_state(false)"  class="col-sm-2 m-1 btn btn-danger">OFF</button>
+    </div>
   </div>
 </template>
 <script setup>
 import { ref, watch } from 'vue'
+import axios from 'axios';
 
 const number1 = ref(0)
 const number2 = ref(0)
@@ -28,5 +33,18 @@ watch(number2, async (newNumber, oldNumber) => {
   result.value= newNumber + number1.value;
   console.log(result.value)
 })
+
+const set_led_state = function(state){
+  console.log(state)
+  let data = {
+    name: "led1",
+    state:state
+  }
+  
+  axios.get("http://192.168.1.90/leds_json",(data)).then((response)=>{
+    console.log(response)
+  })
+  
+}
 </script>
 
