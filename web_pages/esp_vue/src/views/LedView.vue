@@ -34,16 +34,21 @@ watch(number2, async (newNumber, oldNumber) => {
   console.log(result.value)
 })
 
-const set_led_state = function(state){
+const set_led_state = async function(state){
   console.log(state)
   let data = {
     name: "led1",
     state:state
   }
   
-  axios.get("http://192.168.1.90/leds_json",(data)).then((response)=>{
+  /*
+  axios.get("/api/leds_json", {}).then((response)=>{
     console.log(response)
-  })
+  })*/
+  const response =  await fetch('/api/leds_json');
+  const data_jon  = await response.json();
+  console.log(data_jon);
+
   
 }
 </script>

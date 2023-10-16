@@ -7,6 +7,8 @@
 #include "file_manager_spiffs.h"
 #include "stdio.h"
 #include "cJSON.h"
+#include "esp_wifi.h"
+
 
 static  char *ssid = "Bbox-727DF9A6" ;
 static  char *password= "c7HwHdEL33bhCJ4fVm";
@@ -14,6 +16,7 @@ static  char *TAG = "webserver";
 static esp_err_t test_page_handler(httpd_req_t *req);
 static esp_err_t on_default_handler(httpd_req_t *req);
 static esp_err_t on_led_json_handler(httpd_req_t *req);
+static esp_err_t on_api_wifi_scan_handler(httpd_req_t *req);
 
 static char * BASE_PATH =  "/spiffs";
 
@@ -21,6 +24,7 @@ void webserver_test_loop(){
    wifi_connect_initialize() ;
    vTaskDelay(pdMS_TO_TICKS(1000));
    esp_err_t ret = wifi_connect_sta_start(ssid, password, 10000);
+   webserver_mdns_start_service("sous", "Testing DNS");
    //wifi_connect_ap_start("Sous", "12345678");
   
   file_manager_spiffs_init(BASE_PATH);
@@ -39,12 +43,23 @@ void webserver_test_loop(){
    // JSON REQUEST 
    struct page_info_t led_control_info = {
      .method = HTTP_GET,
-     .url = "/leds_json",
+     .url = "/api/leds_json",
      .page_handler = on_led_json_handler 
    };
-
-    webserver_register_page(server,&led_control_info);
+   webserver_register_page(server,&led_control_info);
    
+
+  // JSON REQUEST 
+   led_control_info.method = HTTP_POST;
+   led_control_info.url = "/api/leds_json2";
+   led_control_info.page_handler = on_led_json_handler;
+   webserver_register_page(server,&led_control_info);
+
+   // JSON REQUEST WIFI SCAN
+   led_control_info.method = HTTP_GET;
+   led_control_info.url = "/api/wifi_scan";
+   led_control_info.page_handler = on_api_wifi_scan_handler;
+   webserver_register_page(server,&led_control_info);
   
 
    // ON DEFAULT URL 
@@ -160,3 +175,64 @@ static esp_err_t on_led_json_handler(httpd_req_t *req){
  httpd_resp_sendstr(req, json_text);
  return ESP_OK ;
 }
+
+
+static char *get_security_name(wifi_auth_mode_t mode);
+wifi_ap_record_t records[20];
+int count = 20 ;
+static esp_err_t on_api_wifi_scan_handler(httpd_req_t *req){
+  wifi_scan_config_t scan_config =  {
+    .ssid =0 ,
+    .bssid =0, 
+    .channel =0,
+    .show_hidden = true
+  };
+
+  esp_wifi_scan_start(&scan_config,  true);
+
+ 
+  esp_wifi_scan_get_ap_records(&count,records);
+  cJSON *data = cJSON_CreateArray();
+
+  for(int i=0; i<count ;i++)
+  {
+    cJSON *row = cJSON_CreateObject();
+    cJSON_AddStringToObject(row, "SSID", (char *)records[i].ssid);
+    cJSON_AddNumberToObject(row, "CH", records[i].primary);
+    cJSON_AddNumberToObject(row, "RSSI", records[i].rssi);
+    cJSON_AddStringToObject(row, "authmode", (char *)get_security_name(records[i].authmode));
+    cJSON_AddItemToArray(data, row);
+    //cJSON_Delete(row);
+  }
+
+  char *data_json = cJSON_Print(data);
+
+  cJSON_Delete(data);
+  ESP_LOGI(TAG, "%s", data_json);
+  httpd_resp_set_type(req, "text/json");
+  httpd_resp_sendstr(req, data_json);
+  return ESP_OK;
+
+}
+
+static char *get_security_name(wifi_auth_mode_t mode){
+  switch (mode)
+  {
+  case   WIFI_AUTH_OPEN: return "OPEN" ; 
+  case   WIFI_AUTH_WEP: return "WEP" ;             
+  case   WIFI_AUTH_WPA_PSK: return "WPA_PSK" ;     
+  case   WIFI_AUTH_WPA2_PSK: return "WPA2_PSK" ;      
+  case   WIFI_AUTH_WPA_WPA2_PSK: return "WPA_WPA2_PSK" ;    
+  case   WIFI_AUTH_WPA2_ENTERPRISE: return "WPA2_ENTERPRISE" ;
+  case   WIFI_AUTH_WPA3_PSK: return "WPA3_PSK" ;
+  case   WIFI_AUTH_WPA2_WPA3_PSK: return "WPA2_WPA3_PSK" ;
+  case   WIFI_AUTH_WAPI_PSK: return "WAPI_PSK" ;
+  case   WIFI_AUTH_OWE: return "OWE" ;
+  case   WIFI_AUTH_MAX: return "MAX" ;
+  default:
+    return "NONE";
+    break;
+  }
+}
+
+ 

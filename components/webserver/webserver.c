@@ -1,4 +1,5 @@
 #include "webserver.h"
+#include "mdns.h"
 
 
 static httpd_handle_t server3 ;
@@ -39,6 +40,19 @@ void webserver_register_page(httpd_handle_t server, struct page_info_t *infos ){
    ESP_LOGI(TAG, "Page with [URL: %s ]  registered successfully ", infos->url);
 }
 
+/**
+ * @brief Start the mDNS service on the ESP32
+ * 
+ * @return esp_err_t 
+ */
+esp_err_t webserver_mdns_start_service(const char *hostname, const char * instance){
+ ESP_ERROR_CHECK( mdns_init());
+ ESP_ERROR_CHECK( mdns_hostname_set(hostname) );
+ ESP_LOGI(TAG, "mdns name set to : %s", hostname);
+ ESP_ERROR_CHECK( mdns_instance_name_set(instance) );
+
+ return ESP_OK ;
+}
 void webserver_stop()
 {
 

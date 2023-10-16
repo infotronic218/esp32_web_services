@@ -14,6 +14,15 @@ export default defineConfig({
       
     }
   },
+  server:{
+    proxy:{
+      "/api":{
+        target:"http://sous.local",
+        changeOrigin:true
+
+      }
+    }
+  }
   
 })
 

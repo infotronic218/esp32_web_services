@@ -92,3 +92,5 @@ esp_err_t spiffs_helper_get_file(char *base_path,char *path, char *mode, FILE *f
     ESP_LOGE(TAG, "%s File read ERROR", full_path);
     return ESP_FAIL ;
 }*/
+
+
