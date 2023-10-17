@@ -16,6 +16,11 @@
         <button v-on:click="set_led_state(true)" class="col-sm-2 m-1 btn btn-success">ON</button>
         <button v-on:click="set_led_state(false)"  class="col-sm-2 m-1 btn btn-danger">OFF</button>
     </div>
+
+    <div class="form-check form-switch">
+  <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+  <label class="form-check-label" for="flexSwitchCheckDefault">Default switch checkbox input</label>
+</div>
   </div>
 </template>
 <script setup>
@@ -45,7 +50,7 @@ const set_led_state = async function(state){
   axios.get("/api/leds_json", {}).then((response)=>{
     console.log(response)
   })*/
-  const response =  await fetch('/api/leds_json');
+  const response =  await fetch('/api/led_command');
   const data_jon  = await response.json();
   console.log(data_jon);
 
