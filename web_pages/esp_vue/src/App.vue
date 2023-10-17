@@ -18,6 +18,9 @@ import { RouterLink, RouterView } from 'vue-router'
             <li class="nav-item">
               <RouterLink class="btn btn-warning mx-2" to="/leds">LED</RouterLink>
             </li>
+            <li class="nav-item">
+              <RouterLink class="btn btn-secondary mx-2" :to="{name:'WiFi'}">WiFi</RouterLink>
+            </li>
           </ul>
           
         </div>

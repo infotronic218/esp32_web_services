@@ -20,9 +20,9 @@ export default defineConfig({
         target:"http://sous.local",
         changeOrigin:true
 
-      }
     }
   }
+}
   
 })
 

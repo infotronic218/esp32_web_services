@@ -180,6 +180,7 @@ static esp_err_t on_led_json_handler(httpd_req_t *req){
 static char *get_security_name(wifi_auth_mode_t mode);
 wifi_ap_record_t records[20];
 int count = 20 ;
+
 static esp_err_t on_api_wifi_scan_handler(httpd_req_t *req){
   wifi_scan_config_t scan_config =  {
     .ssid =0 ,

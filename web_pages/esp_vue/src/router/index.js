@@ -10,12 +10,17 @@ const router = createRouter({
       component: HomeView
     },
     {
-      path: '/leds',
+      path: '/leds1',
       name: 'leds',
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/LedView.vue')
+    },
+    {
+      path: '/available-WiFi',
+      name: 'WiFi',
+      component: () => import ('../views/WiFi.vue')
     }
   ]
 })
