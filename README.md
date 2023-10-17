@@ -14,3 +14,11 @@
 '''
 spiffs_create_partition_image(storage, ../spiffs_directory FLASH_IN_PROJECT)
 '''
+
+
+# mDNS Configuration
+
+Congiguring the mDNS service to have a custom domain name in local for the ESP32
+
+The __mDNS__ is no longer part of ESP-IDF in version 5. It should be added as 
+an external library using __idf.py__ command line. 
