@@ -170,9 +170,20 @@ static esp_err_t on_default_handler(httpd_req_t *req)
  * @param req 
  * @return esp_err_t 
  */
- char content[256];
+char content[256];
+bool led_state ;
 static esp_err_t on_led_command_handler(httpd_req_t *req){
- 
+  if(req->method==HTTP_GET){
+     cJSON *data = cJSON_CreateObject();
+     cJSON_AddBoolToObject(data, "state", led_state);
+     cJSON_AddStringToObject(data, "name", "led1");
+     char *data_str = cJSON_Print(data);
+     free(data);
+     httpd_resp_sendstr(req, data_str);
+    return ESP_OK;
+  }
+  
+  memset(content, 0, sizeof(content));
   int ret = httpd_req_recv(req, content, req->content_len);
   ESP_LOGI(TAG,"%s", content);
   cJSON *data = cJSON_Parse(content);
@@ -185,12 +196,13 @@ static esp_err_t on_led_command_handler(httpd_req_t *req){
    bool state_value = cJSON_IsTrue(state);
    ESP_LOGI(TAG, "State : %d", state_value);
    led_set_state(LED_PIN, state_value);
-  free(state);
-  free(data);
-  ESP_LOGI(TAG, "%s", req->uri);
+   led_state = state_value ;
+   free(state);
+   free(data);
+   ESP_LOGI(TAG, "%s", req->uri);
 
 
-  httpd_resp_send(req, "OK", 2);
+  httpd_resp_sendstr(req, content);
 
 return ESP_OK ;
 }
