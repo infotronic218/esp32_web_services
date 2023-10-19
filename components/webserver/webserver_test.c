@@ -8,6 +8,9 @@
 #include "stdio.h"
 #include "cJSON.h"
 #include "esp_wifi.h"
+#include "leds.h"
+
+#define LED_PIN 2
 
 
 static  char *ssid = "Bbox-727DF9A6" ;
@@ -16,11 +19,13 @@ static  char *TAG = "webserver";
 static esp_err_t test_page_handler(httpd_req_t *req);
 static esp_err_t on_default_handler(httpd_req_t *req);
 static esp_err_t on_led_json_handler(httpd_req_t *req);
+static esp_err_t on_led_command_handler(httpd_req_t *req);
 static esp_err_t on_api_wifi_scan_handler(httpd_req_t *req);
 
 static char * BASE_PATH =  "/spiffs";
 
 void webserver_test_loop(){
+   led_initialize_simple(LED_PIN);
    wifi_connect_initialize() ;
    vTaskDelay(pdMS_TO_TICKS(1000));
    esp_err_t ret = wifi_connect_sta_start(ssid, password, 10000);
@@ -51,8 +56,8 @@ void webserver_test_loop(){
 
   // JSON REQUEST 
    led_control_info.method = HTTP_POST;
-   led_control_info.url = "/api/leds_json2";
-   led_control_info.page_handler = on_led_json_handler;
+   led_control_info.url = "/api/led_command";
+   led_control_info.page_handler = on_led_command_handler;
    webserver_register_page(server,&led_control_info);
 
    // JSON REQUEST WIFI SCAN
@@ -118,7 +123,7 @@ static esp_err_t test_page_handler(httpd_req_t *req){
  */
 static esp_err_t on_default_handler(httpd_req_t *req)
 {
-  char full_path[600];
+  char full_path[1024];
   sprintf(full_path, "%s%s", BASE_PATH, req->uri);
   ESP_LOGI(TAG, "Path: %s", full_path);
   // LOAD THE FILE 
@@ -159,10 +164,42 @@ static esp_err_t on_default_handler(httpd_req_t *req)
 }
 
 
+/**
+ * @brief POST Request to handle led STATE 
+ * 
+ * @param req 
+ * @return esp_err_t 
+ */
+ char content[256];
+static esp_err_t on_led_command_handler(httpd_req_t *req){
+ 
+  int ret = httpd_req_recv(req, content, req->content_len);
+  ESP_LOGI(TAG,"%s", content);
+  cJSON *data = cJSON_Parse(content);
+  if(!cJSON_IsObject(data)){
+    httpd_resp_send_500(req);
+    return ESP_OK;
+  }
+   
+   cJSON *  state = cJSON_GetObjectItem(data, "state");
+   bool state_value = cJSON_IsTrue(state);
+   ESP_LOGI(TAG, "State : %d", state_value);
+   led_set_state(LED_PIN, state_value);
+  free(state);
+  free(data);
+  ESP_LOGI(TAG, "%s", req->uri);
+
+
+  httpd_resp_send(req, "OK", 2);
+
+return ESP_OK ;
+}
 
 
 
 static esp_err_t on_led_json_handler(httpd_req_t *req){
+
+  
 
  cJSON * data = cJSON_CreateObject();
  cJSON_AddBoolToObject(data, "state", false);

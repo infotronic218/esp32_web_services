@@ -46,14 +46,14 @@ const set_led_state = async function(state){
     state:state
   }
   
-  /*
-  axios.get("/api/leds_json", {}).then((response)=>{
+
+  axios.post("/api/led_command?state=true&pin=2", data).then((response)=>{
     console.log(response)
-  })*/
-  const response =  await fetch('/api/led_command');
+  })
+/*const response =  await fetch('/api/led_command');
   const data_jon  = await response.json();
   console.log(data_jon);
-
+*/
   
 }
 </script>
