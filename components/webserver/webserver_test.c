@@ -54,8 +54,14 @@ void webserver_test_loop(){
    webserver_register_page(server,&led_control_info);
    
 
-  // JSON REQUEST 
+  // JSON POST REQUEST 
    led_control_info.method = HTTP_POST;
+   led_control_info.url = "/api/led_command";
+   led_control_info.page_handler = on_led_command_handler;
+   webserver_register_page(server,&led_control_info);
+
+    // JSON POST REQUEST 
+   led_control_info.method = HTTP_GET;
    led_control_info.url = "/api/led_command";
    led_control_info.page_handler = on_led_command_handler;
    webserver_register_page(server,&led_control_info);

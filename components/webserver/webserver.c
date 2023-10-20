@@ -12,6 +12,7 @@ httpd_handle_t  webserver_start(bool wildcard)
 {
     httpd_handle_t server = NULL ;
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
+    config.stack_size = config.stack_size * 2;
     // Attach the wildcard handler
     if(wildcard) { config.uri_match_fn = httpd_uri_match_wildcard ;}
 
